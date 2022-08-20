@@ -6,6 +6,10 @@ import type { ResolveSchema, SearchProperties } from "./types";
 import { create as createNode, Node } from "./prefix-tree/node";
 import { find as trieFind, insert as trieInsert, removeDocumentByWord, Nodes } from "./prefix-tree/trie";
 import { trackInsertion } from "./insertion-checker";
+import dc from "node:diagnostics_channel";
+
+const beforeSearchCh = dc.channel("lyra.beforeSearch");
+const afterInsertCh = dc.channel("lyra.afterInsert");
 
 type Index = Record<string, Node>;
 
@@ -275,6 +279,7 @@ export function insert<S extends PropertiesSchema>(
   lyra.docs[id] = doc;
   recursiveTrieInsertion(lyra.index, lyra.nodes, doc, id, config);
   trackInsertion(lyra);
+  afterInsertCh.publish(id)
 
   return { id };
 }
@@ -335,6 +340,7 @@ export function search<S extends PropertiesSchema>(
   }
 
   const tokens = tokenize(params.term, language);
+  afterInsertCh.publish(tokens);
   const indices = getIndices(lyra, params.properties);
   const uniqueDocIds = new Set<string>();
   const { limit = 10, offset = 0, exact = false } = params;
