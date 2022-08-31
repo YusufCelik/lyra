@@ -23,7 +23,7 @@
     "build:cjs": "tsc --project tsconfig.cjs.json",
     "build:module": "tsc --project tsconfig.esm.json",
     "build": "rimraf ./dist && pnpm build:module && pnpm build:cjs",
-    "test": "c8 -c tests/config/c8-local.json tap --rcfile=tests/config/tap.yml tests/*.test.ts",
+    "test": "c8 -c tests/config/c8-local.json tap --rcfile=tests/config/tap.yml tests/**/stemmer.*.test.ts",
     "test:ci": "c8 -c tests/config/c8-ci.json tap --rcfile=tests/config/tap.yml --no-color tests/*.test.ts",
     "ci": "npm run build && npm run test:ci"
   },
